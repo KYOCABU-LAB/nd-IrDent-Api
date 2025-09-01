@@ -72,31 +72,7 @@ CREATE TABLE Doctor (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
 
---modulo tratamiento
-
-CREATE TABLE Plan_Tratamiento (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_paciente BIGINT,
-    cantidad TEXT,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_paciente) REFERENCES Paciente (id)
-)
-
-CREATE TABLE Tratamiento (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_plan_tratamiento INT,
-    descripcion TEXT,
-    costo DECIMAL(10, 2),
-    duracion INT,
-    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_plan_tratamiento) REFERENCES Plan_Tratamiento (id)
-)
+-- datos de hallazgos
 
 CREATE TABLE Hallazgos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -142,4 +118,38 @@ CREATE TABLE Hallazgos_paciente (
     FOREIGN KEY (id_paciente) REFERENCES Paciente (id),
     FOREIGN KEY (id_doctor) REFERENCES Doctor (id),
     FOREIGN KEY (id_hallazgo) REFERENCES Hallazgos (id)
+),
+
+--modulo tratamiento
+
+CREATE TABLE Plan_Tratamiento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_paciente BIGINT,
+    cantidad TEXT,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_paciente) REFERENCES Paciente (id)
+)
+
+CREATE TABLE Tratamiento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_plan_tratamiento INT,
+    descripcion TEXT,
+    costo DECIMAL(10, 2),
+    duracion INT,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_plan_tratamiento) REFERENCES Plan_Tratamiento (id)
+)
+
+CREATE TABLE Tipo_Registro_clinico (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_tipo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
