@@ -1,4 +1,4 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 /**
  * clase personalizada para manjear excepciones HTTP
@@ -8,7 +8,26 @@ import { HttpException } from '@nestjs/common';
  * @param {number} status - código de estado HTTP
  */
 export class BaseException extends HttpException {
-  constructor(message: string, status: number) {
-    super(message, status);
+  constructor(
+    message: string,
+    status: number = HttpStatus.INTERNAL_SERVER_ERROR,
+    code?: string | number,
+    extra?: Record<string, any>,
+    cause?: any,
+  ) {
+    super(
+      {
+        statusCode: status,
+        message,
+        code,
+        ...extra,
+        cause: cause
+          ? cause instanceof Error
+            ? cause.message
+            : cause
+          : undefined,
+      },
+      status,
+    );
   }
 }
