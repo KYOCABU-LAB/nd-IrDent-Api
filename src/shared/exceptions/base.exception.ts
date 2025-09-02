@@ -9,7 +9,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
  */
 export class BaseException extends HttpException {
   constructor(
-    message: string,
+    message: string = 'Error interno',
     status: number = HttpStatus.INTERNAL_SERVER_ERROR,
     code?: string | number,
     extra?: Record<string, any>,
