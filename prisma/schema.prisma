@@ -15,6 +15,16 @@ datasource db {
 }
 
 /**
+ * tabla test de prueba
+ */
+
+model TestUser {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+/**
  * usuarios y roles
  */
 model User {
