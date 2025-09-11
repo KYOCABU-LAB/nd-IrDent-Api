@@ -27,16 +27,14 @@ CREATE TABLE UserRole (
 
 --tablas pacientes
 
-CREATE TABLE Documento (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    tipo_documento VARCHAR(100) NOT NULL,
-    numero_documento VARCHAR(50) NOT NULL UNIQUE
-);
-
 CREATE TABLE Paciente (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    id_documento INT,
     numero_documento VARCHAR(50) NOT NULL UNIQUE,
+    tipo_documento ENUM(
+        'DNI',
+        'CARNETE EXTRANJERIA',
+        'OTRO'
+    ) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido_paterno VARCHAR(100),
     apellido_materno VARCHAR(100),
@@ -59,10 +57,9 @@ CREATE TABLE Paciente (
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_documento) REFERENCES Documento (id)
 );
 
-CREATE TABLE Contacto_Paciente (
+CREATE TABLE ContactoPaciente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente BIGINT,
     telf_casa VARCHAR(15),
@@ -72,7 +69,7 @@ CREATE TABLE Contacto_Paciente (
     FOREIGN KEY (id_paciente) REFERENCES Paciente (id)
 );
 
-CREATE TABLE Direccion_Paciente (
+CREATE TABLE DireccionPaciente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente BIGINT,
     calle VARCHAR(100),
@@ -89,8 +86,12 @@ CREATE TABLE Direccion_Paciente (
 
 CREATE TABLE Doctor (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    id_documento INT,
     numero_documento VARCHAR(50) UNIQUE,
+    tipo_documento ENUM(
+        'DNI',
+        'CARNETE EXTRANJERIA',
+        'OTRO'
+    ) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido_paterno VARCHAR(100),
     apellido_materno VARCHAR(100),
@@ -100,12 +101,11 @@ CREATE TABLE Doctor (
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_documento) REFERENCES Documento (id)
 );
 
 -- tablas dientes
 
-CREATE TABLE Dientes (
+CREATE TABLE Diente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_diente VARCHAR(10) NOT NULL UNIQUE,
     nombre_diente VARCHAR(100) NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE Dientes (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Tipo_Matriz (
+CREATE TABLE TipoMatriz (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo_diente ENUM(
         'incisivo',
@@ -137,7 +137,7 @@ CREATE TABLE Tipo_Matriz (
 );
 
 -- Posiciones específicas de cada matriz
-CREATE TABLE Posicion_Matriz (
+CREATE TABLE PosicionMatriz (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_tipo_matriz INT NOT NULL,
     fila TINYINT NOT NULL, -- 0, 1, 2
@@ -160,7 +160,7 @@ CREATE TABLE Posicion_Matriz (
 );
 
 --   Instancias específicas de matriz por diente
-CREATE TABLE Matriz_Diente (
+CREATE TABLE MatrizDiente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_diente INT NOT NULL,
     id_tipo_matriz INT NOT NULL,

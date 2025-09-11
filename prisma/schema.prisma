@@ -14,10 +14,166 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TestUser {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+/**
+ * pacientes
+ */
 
-  @@map("test_users")
+model Paciente {
+  id                  Int                 @id @default(autoincrement())
+  numero_documento    String              @unique
+  tipo_documento      EnumTipoDocumento   @default(DNI)
+  nombre              String
+  apellido_paterno    String
+  apellido_materno    String
+  fecha_nacimiento    DateTime
+  genero              EnumGenero          @default(OTRO)
+  telefono            String
+  email               String
+  direccion           String
+  estado_civil        EnumEstadocivil
+  ocupacion           String
+  fecha_creacion      DateTime            @default(now())
+  fecha_actualizacion DateTime            @updatedAt
+  ContactoPaciente    ContactoPaciente[]
+  DireccionPaciente   DireccionPaciente[]
+}
+
+model ContactoPaciente {
+  id                  Int      @id @default(autoincrement())
+  paciente            Paciente @relation(fields: [pacienteId], references: [id])
+  pacienteId          Int
+  nombre              String
+  telefono            String
+  relacion            String
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+}
+
+model DireccionPaciente {
+  id                  Int      @id @default(autoincrement())
+  paciente            Paciente @relation(fields: [pacienteId], references: [id])
+  pacienteId          Int
+  calle               String
+  referencia          String
+  departamento        String
+  distrito            String
+  provincia           String
+  pais                String
+  nro_exterior        String
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+}
+
+/**
+ * doctores
+ */
+
+model Doctor {
+  id                  Int               @id @default(autoincrement())
+  numero_documento    String            @unique
+  tipo_documento      EnumTipoDocumento @default(DNI)
+  nombre              String
+  apellido_paterno    String
+  apellido_materno    String
+  telefono            String
+  email               String
+  especialidad        String
+  estado              EstadoDoctor      @default(ACTIVO)
+  fecha_creacion      DateTime          @default(now())
+  fecha_actualizacion DateTime          @updatedAt
+}
+
+enum EstadoDoctor {
+  ACTIVO
+  INACTIVO
+}
+
+/**
+ * Dientes
+ */
+model Diente {
+  id                  Int            @id @default(autoincrement())
+  numero_diente       String
+  nombre_diente       String
+  descripcion         String?
+  edad_diente         String?
+  tipo_diente         EnumTipoDiente
+  fecha_creacion      DateTime       @default(now())
+  fecha_actualizacion DateTime       @updatedAt
+  MatrizDiente        MatrizDiente[]
+}
+
+model TipoMatriz {
+  id                  Int              @id @default(autoincrement())
+  tipo_diente         EnumTipoDiente   @unique
+  filas               Int              @default(3)
+  columnas            Int              @default(3)
+  descripcion         String
+  fecha_creacion      DateTime         @default(now())
+  fecha_actualizacion DateTime         @updatedAt
+  PosicionMatriz      PosicionMatriz[]
+  MatrizDiente        MatrizDiente[]
+}
+
+model PosicionMatriz {
+  id                   Int               @id @default(autoincrement())
+  tipo_matriz          TipoMatriz        @relation(fields: [tipoMatrizId], references: [id])
+  tipoMatrizId         Int
+  fila                 Int
+  columna              Int
+  codigo               String
+  cara_anatomica       EnumCaraAnatomica
+  ubicacion_especifica String?
+  es_activa            Boolean           @default(true)
+  descripcion          String
+  fecha_creacion       DateTime          @default(now())
+  fecha_actualizacion  DateTime          @updatedAt
+}
+
+model MatrizDiente {
+  id                  Int        @id @default(autoincrement())
+  diente              Diente     @relation(fields: [dienteId], references: [id])
+  dienteId            Int
+  tipo_matriz         TipoMatriz @relation(fields: [tipoMatrizId], references: [id])
+  tipoMatrizId        Int
+  fecha_creacion      DateTime   @default(now())
+  fecha_actualizacion DateTime   @updatedAt
+
+  @@unique([dienteId, tipoMatrizId])
+}
+
+enum EnumTipoDiente {
+  INCISIVO
+  CANINO
+  PREMOLAR
+  MOLAR
+}
+
+enum EnumCaraAnatomica {
+  VESTIBULAR
+  LINGUAL
+  MESIAL
+  DISTAL
+  OCLUSAL
+  PALATINA
+}
+
+enum EnumTipoDocumento {
+  DNI
+  CARNETE_EXTRANJERIA
+  OTRO
+  PASAPORTE
+}
+
+enum EnumGenero {
+  MASCULINO
+  FEMENINO
+  OTRO
+}
+
+enum EnumEstadocivil {
+  SOLTERO
+  CASADO
+  DIVORCIADO
+  VIUDO
 }
