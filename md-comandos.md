@@ -44,6 +44,9 @@ $ npx prisma generate
 # reseteas la base de datos
 $ npx prisma migrate reset
 
+# comando para aplicar migraciones guardadas en prisma
+$ npx prisma migrate deploy
+
 # para ver la base de datos en web con prisma studio
 $ npx prisma studio
 
