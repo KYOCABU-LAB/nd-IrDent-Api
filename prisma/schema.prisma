@@ -36,8 +36,8 @@ model User {
   fecha_actualizacion DateTime   @updatedAt
 
   //fk relaciones
-  UserRole            UserRole[]
-  Doctor              Doctor[]
+  UserRole UserRole[]
+  Doctor   Doctor[]
 }
 
 model Role {
@@ -47,7 +47,6 @@ model Role {
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
   UserRole            UserRole[]
-  
 }
 
 model UserRole {
@@ -59,7 +58,6 @@ model UserRole {
   userId       Int
   role         Role     @relation(fields: [roleId], references: [id])
   roleId       Int
-
 
   @@unique([userId, roleId])
 }
@@ -147,7 +145,7 @@ model Doctor {
   citas               Cita[]
 
   //fk relacion
-  user                User                @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 }
 
 enum EstadoDoctor {

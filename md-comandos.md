@@ -50,4 +50,7 @@ $ npx prisma migrate deploy
 # para ver la base de datos en web con prisma studio
 $ npx prisma studio
 
+# para eliminar la base de datos
+$ npx prisma migrate reset
+
 ```
