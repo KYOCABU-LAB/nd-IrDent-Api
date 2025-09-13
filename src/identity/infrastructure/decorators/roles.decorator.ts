@@ -3,7 +3,7 @@ import { SetMetadata } from '@nestjs/common';
 export const ROLES_KEY = 'roles';
 
 /**
- * decorador para roles de un usuario
+ * esto es un decorador de roles
  * @param roles  lista de arreglos de roles
  * @returns  metadata con la lista de roles
  */
