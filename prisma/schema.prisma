@@ -31,11 +31,13 @@ model User {
   id                  Int        @id @default(autoincrement())
   username            String     @unique
   password_hash       String
-  email               String     @unique
   estado              EstadoUser @default(ACTIVO)
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
+
+  //fk relaciones
   UserRole            UserRole[]
+  Doctor              Doctor[]
 }
 
 model Role {
@@ -45,6 +47,7 @@ model Role {
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
   UserRole            UserRole[]
+  
 }
 
 model UserRole {
@@ -56,6 +59,7 @@ model UserRole {
   userId       Int
   role         Role     @relation(fields: [roleId], references: [id])
   roleId       Int
+
 
   @@unique([userId, roleId])
 }
@@ -125,13 +129,14 @@ model DireccionPaciente {
 
 model Doctor {
   id                  Int                 @id @default(autoincrement())
+  user_id             Int                 @unique
   numero_documento    String              @unique
   tipo_documento      EnumTipoDocumento   @default(DNI)
   nombre              String
   apellido_paterno    String
   apellido_materno    String
   telefono            String
-  email               String
+  email               String              @unique
   especialidad        String
   estado              EstadoDoctor        @default(ACTIVO)
   fecha_creacion      DateTime            @default(now())
@@ -140,6 +145,9 @@ model Doctor {
   tratamientos        Tratamiento[]
   registros_clinicos  RegistroClinico[]
   citas               Cita[]
+
+  //fk relacion
+  user                User                @relation(fields: [user_id], references: [id])
 }
 
 enum EstadoDoctor {

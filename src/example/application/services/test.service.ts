@@ -3,7 +3,7 @@ import type { CreateTestDto, TestResponseDto } from '../dto/test';
 import { TestValidator } from 'src/example/domain/validators/test.validator';
 import {
   EmailAlreadyExistsException,
-  EmailException,
+  EmailException, 
 } from '../exceptions/EmailExeption';
 import { Injectable } from '@nestjs/common';
 

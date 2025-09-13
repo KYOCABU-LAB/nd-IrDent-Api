@@ -5,9 +5,14 @@ import { AppService } from './app.service';
 import { ExampleModule } from './example/example.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
+import { DoctorsModule } from './doctors/doctors.module';
 
 @Module({
-  imports: [ExampleModule, PrismaModule],
+  imports: [
+    ExampleModule,
+    DoctorsModule,
+    PrismaModule
+  ],
   controllers: [AppController],
   providers: [
     AppService,
