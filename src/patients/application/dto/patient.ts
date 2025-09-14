@@ -48,8 +48,4 @@ export interface PatientResponseDto {
   fecha_actualizacion: Date;
 }
 
-export interface ListPatientsQuery {
-  skip?: number; 
-  take?: number;
-  q?: string;   
-}
+

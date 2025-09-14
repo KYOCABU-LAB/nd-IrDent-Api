@@ -4,7 +4,6 @@ import type {
   CreatePatientDto,
   UpdatePatientDto,
   PatientResponseDto,
-  ListPatientsQuery,
 } from 'src/patients/application/dto/patient';
 import {
   PatientAlreadyExistsException,
@@ -13,11 +12,19 @@ import {
 } from '../exceptions/patient.exception';
 import { PatientValidator } from 'src/patients/domain/validators/patient.validator';
 import { EnumGenero, EnumTipoDocumento } from 'generated/prisma';
+import {PaginationFilters} from 'src/shared/types/paginated.interface';
 
 @Injectable()
 export class PatientService {
   constructor(private readonly repo: PatientRepository) {}
 
+  /**
+   * Crea un paciente
+   * @throws {PatientInvalidDataException} si los datos proporcionados no son válidos
+   * @throws {PatientAlreadyExistsException} si el paciente ya existe
+   * @param {CreatePatientDto} data - datos del paciente a crear
+   * @returns {Promise<PatientResponseDto>} - paciente creado
+   */
   async create(data: CreatePatientDto): Promise<PatientResponseDto> {
     if (
       !PatientValidator.nombreRequerido(data.nombre) ||
@@ -42,6 +49,15 @@ export class PatientService {
     return this.repo.create(data);
   }
 
+  /**
+   * Actualiza un paciente existente
+   * @throws {PatientNotFoundException} si no se encuentra el paciente con el id proporcionado
+   * @throws {PatientInvalidDataException} si los datos proporcionados no son válidos
+   * @throws {PatientAlreadyExistsException} si el paciente con los datos proporcionados ya existe
+   * @param {number} id - id del paciente a actualizar
+   * @param {UpdatePatientDto} data - datos del paciente a actualizar
+   * @returns {Promise<PatientResponseDto>} - paciente actualizado
+   */
   async update(id: number, data: UpdatePatientDto): Promise<PatientResponseDto> {
     const found = await this.repo.findById(id);
     if (!found) throw new PatientNotFoundException();
@@ -77,27 +93,46 @@ export class PatientService {
     return this.repo.update(id, data);
   }
 
+  /**
+   * Elimina un paciente
+   * @throws {PatientNotFoundException} si el paciente con el id proporcionado no existe
+   * @param {number} id - id del paciente a eliminar
+   */
   async delete(id: number): Promise<void> {
     const found = await this.repo.findById(id);
     if (!found) throw new PatientNotFoundException();
     await this.repo.delete(id);
   }
 
+  /**
+   * Elimina todos los pacientes de la base de datos
+   * @returns {Promise<number>} - número de pacientes eliminados
+   */
   async clearAll(): Promise<number> {
     // operación destructiva
     return this.repo.clearAll();
   }
 
+  /**
+   * Busca un paciente por su id
+   * @throws {PatientNotFoundException} si el paciente con el id proporcionado no existe
+   * @param {number} id - id del paciente a buscar
+   * @returns {Promise<PatientResponseDto>} - paciente encontrado
+   */
   async findById(id: number): Promise<PatientResponseDto> {
     const p = await this.repo.findById(id);
     if (!p) throw new PatientNotFoundException();
     return p;
   }
 
-  async list(query: ListPatientsQuery) {
-    const skip = Number(query?.skip ?? 0);
-    const take = Math.min(Number(query?.take ?? 10), 100);
-    const q = query?.q?.trim() || undefined;
-    return this.repo.list({ skip, take, q });
+/**
+ * Obtiene una lista de pacientes
+ * @param {ListPatientsQuery} query - objeto que contiene los parámetros de búsqueda
+ * @returns {Promise<{ data: PatientResponseDto[]; total: number }>} - lista de pacientes encontrados
+ */
+  async list(query: PaginationFilters) {
+    const skip = Number(query?.page ?? 0);
+    const take = Math.min(Number(query?.size ?? 10), 100);
+    return this.repo.list({ skip, take });
   }
 }

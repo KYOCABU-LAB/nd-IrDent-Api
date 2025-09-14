@@ -14,8 +14,12 @@ import type {
   CreatePatientDto,
   UpdatePatientDto,
   PatientResponseDto,
-  ListPatientsQuery,
 } from 'src/patients/application/dto/patient';
+
+// ✅ Después
+import type { PaginationFilters } from 'src/shared/types/paginated.interface';
+
+
 
 @Controller('patients')
 export class PatientController {
@@ -52,7 +56,7 @@ export class PatientController {
   }
 
   @Get()
-  async list(@Query() q: ListPatientsQuery) {
+  async list( q: PaginationFilters) {
     return this.service.list(q);
   }
 }
