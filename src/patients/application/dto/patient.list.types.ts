@@ -5,4 +5,5 @@ export type PatientFilterFields = {
 };
 
 import type { PaginationFilters } from 'src/shared/types/paginated.interface';
+
 export type PatientListQuery = PaginationFilters<PatientFilterFields>;
