@@ -1,12 +1,18 @@
 /**
  * Interface para representar los filtros de paginación.
  */
-export interface PaginationFilters {
-  page?: number; // página actual (default 1)
-  size?: number; // cantidad por página (default 10)
-  search?: string; // criterio de búsqueda
-  sortBy?: string; // campo de ordenamiento
-  sortOrder?: 'asc' | 'desc';
+import { IsOptional, IsInt, Min, IsString } from 'class-validator';
+
+export class PaginationFilters<T> {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  page?: number;
+  filters?: T;
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  size?: number;
 }
 
 /**
