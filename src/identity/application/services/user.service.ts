@@ -47,4 +47,8 @@ export class UserService {
 
     return user;
   }
+
+  async findByUsername(username: string) {
+    return this.userRepository.findByUsername(username);
+  }
 }
