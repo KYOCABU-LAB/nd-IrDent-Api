@@ -1,7 +1,7 @@
 /**
  * Interface para representar los filtros de paginación.
  */
-export interface Filters {
+export interface PaginationFilters {
   page?: number; // página actual (default 1)
   size?: number; // cantidad por página (default 10)
   search?: string; // criterio de búsqueda
