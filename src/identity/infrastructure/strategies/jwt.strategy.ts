@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from 'src/identity/application/dto/auth.dto';
+import { Request } from 'express';
 
 /**
  * clase JwtStrategy para validar tokens
@@ -23,16 +24,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'irdent-secret-key',
+      passReqToCallback: true,
     });
   }
 
   /**
-   * Método para validar el token
-   *
-   * @param payload  payload del token
+   * Valida un token JWT y devuelve el usuario asociado al mismo
+   * si el token es válido, se devuelve un objeto con el userId, username y roles
+   * si el token no es válido, se lanza una excepción UnauthorizedException
+   * @param req  solicitud HTTP
+   * @param payload  payload del token JWT
    * @returns  objeto con el userId, username y roles que se obtienen del token
+   * @throws UnauthorizedException si el token no es válido
    */
-  async validate(payload: JwtPayload) {
+  async validate(req: Request, payload: JwtPayload) {
+    if (payload.ip && payload.ip !== req.ip) {
+      throw new UnauthorizedException('La dirección IP no coincide');
+    }
     return {
       userId: payload.sub,
       username: payload.username,
