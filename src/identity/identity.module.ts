@@ -1,12 +1,17 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/shared/prisma/prisma.module';
 import { AuthService } from './application/services/auth.service';
+import { RoleService } from './application/services/role.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from './infrastructure/guards/roles.guard';
 import { AuthController } from './infrastructure/controllers/auth.controller';
+import { UserRepository } from './domain/repositories/user-repository.interface';
+import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
+import { RoleRepository } from './domain/repositories/role-repository.interface';
+import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.repository';
 
 @Module({
   imports: [
@@ -18,7 +23,21 @@ import { AuthController } from './infrastructure/controllers/auth.controller';
     PrismaModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, RolesGuard],
-  exports: [AuthService, JwtAuthGuard, RolesGuard],
+  providers: [
+    AuthService,
+    RoleService,
+    JwtStrategy,
+    JwtAuthGuard,
+    RolesGuard,
+    { provide: UserRepository, useClass: PrismaUserRepository },
+    { provide: RoleRepository, useClass: PrismaRoleRepository },
+  ],
+  exports: [AuthService, RoleService, JwtAuthGuard, RolesGuard],
 })
-export class IdentityModule {}
+export class IdentityModule implements OnModuleInit {
+  constructor(private readonly roleService: RoleService) {}
+
+  async onModuleInit() {
+    await this.roleService.initializeRoles();
+  }
+}

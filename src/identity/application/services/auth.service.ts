@@ -1,40 +1,64 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaClient } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
+import { UserRepository } from '../../domain/repositories/user-repository.interface';
 import * as bcrypt from 'bcryptjs';
-
-interface LoginDto {
-  username: string;
-  password: string;
-}
+import {
+  LoginDto,
+  ValidatedUser,
+  JwtPayload,
+  LoginResponse,
+} from '../dto/auth.dto';
+import {
+  UserNotFoundException,
+  InvalidPasswordException,
+} from '../exceptions/auth.exceptions';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaClient,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-    });
-    if (user && (await bcrypt.compare(password, user.password_hash))) {
-      const { password_hash, ...result } = user;
-      return result;
+  /**
+   *  Validar un usuario por su nombre de usuario y contraseña
+   * @param username nombre de usuario
+   * @param password contraseña
+   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @throws UserNotFoundException si el usuario no existe
+   * @throws InvalidPasswordException si la contraseña es incorrecta
+   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   */
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<ValidatedUser> {
+    const user = await this.userRepository.findByUsername(username);
+
+    if (!user) {
+      throw new UserNotFoundException();
     }
-    return null;
+    if (!(await bcrypt.compare(password, user.password_hash))) {
+      throw new InvalidPasswordException();
+    }
+    const { password_hash, ...result } = user;
+    return result;
   }
 
-  async login(loginDto: LoginDto) {
+  /**
+   *  Iniciar sesión con un nombre de usuario y contraseña
+   * @param loginDto objeto de inicio de sesión
+   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @throws UserNotFoundException si el usuario no existe
+   * @throws InvalidPasswordException si la contraseña es incorrecta
+   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   */
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto.username, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-    const payload = {
+    const payload: JwtPayload = {
       username: user.username,
       sub: user.id,
-      roles: user.userRoles.map((ur) => ur.role.name),
+      roles: user.UserRole.map((ur) => ur.role.nombre),
     };
     return {
       access_token: this.jwtService.sign(payload),
