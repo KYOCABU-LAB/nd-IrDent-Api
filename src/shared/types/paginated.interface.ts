@@ -3,12 +3,12 @@
  */
 import { IsOptional, IsInt, Min, IsString } from 'class-validator';
 
-export class PaginationFilters {
+export class PaginationFilters<T> {
   @IsOptional()
   @IsInt()
   @Min(1)
   page?: number;
-
+  filters?: T;
   @IsOptional()
   @IsInt()
   @Min(1)
