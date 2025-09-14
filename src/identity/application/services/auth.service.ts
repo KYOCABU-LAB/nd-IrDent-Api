@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaClient } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
+import { UserRepository } from '../../domain/repositories/user-repository.interface';
 import * as bcrypt from 'bcryptjs';
 
 interface LoginDto {
@@ -11,14 +11,12 @@ interface LoginDto {
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaClient,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-    });
+    const user = await this.userRepository.findByUsername(username);
     if (user && (await bcrypt.compare(password, user.password_hash))) {
       const { password_hash, ...result } = user;
       return result;
@@ -34,7 +32,7 @@ export class AuthService {
     const payload = {
       username: user.username,
       sub: user.id,
-      roles: user.userRoles.map((ur) => ur.role.name),
+      roles: user.UserRole.map((ur) => ur.role.name),
     };
     return {
       access_token: this.jwtService.sign(payload),

@@ -7,6 +7,8 @@ import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from './infrastructure/guards/roles.guard';
 import { AuthController } from './infrastructure/controllers/auth.controller';
+import { UserRepository } from './domain/repositories/user-repository.interface';
+import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { AuthController } from './infrastructure/controllers/auth.controller';
     PrismaModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, RolesGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, RolesGuard, { provide: UserRepository, useClass: PrismaUserRepository }],
   exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class IdentityModule {}
