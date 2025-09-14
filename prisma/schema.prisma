@@ -31,6 +31,10 @@ model User {
   id                  Int        @id @default(autoincrement())
   username            String     @unique
   password_hash       String
+  email               String     @unique
+  nombre              String
+  apellido            String
+  telefono            String?
   estado              EstadoUser @default(ACTIVO)
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
@@ -38,6 +42,7 @@ model User {
   //fk relaciones
   UserRole UserRole[]
   Doctor   Doctor[]
+  refreshTokens RefreshToken[]
 }
 
 model Role {
@@ -413,4 +418,14 @@ enum EnumEstadocivil {
   CASADO
   DIVORCIADO
   VIUDO
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
