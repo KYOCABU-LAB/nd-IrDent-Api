@@ -2,6 +2,12 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
+/**
+ * clase RolesGuard para validar los roles del usuario
+ *
+ * @param context  contexto de la solicitud
+ * @returns  true si el usuario tiene los roles necesarios, false en caso contrario
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}

@@ -6,12 +6,14 @@ import { ExampleModule } from './example/example.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 import { DoctorsModule } from './doctors/doctors.module';
+import { IdentityModule } from './identity/identity.module';
 
 @Module({
   imports: [
     ExampleModule,
     DoctorsModule,
-    PrismaModule
+    PrismaModule,
+    IdentityModule,
   ],
   controllers: [AppController],
   providers: [

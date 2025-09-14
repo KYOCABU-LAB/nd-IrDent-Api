@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 /**
- * JWT strategy para validar tokens
+ * clase JwtStrategy para validar tokens
  *
  * @param payload  payload del token
  * @returns  objeto con el userId, username y roles
