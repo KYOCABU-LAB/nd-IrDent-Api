@@ -2,7 +2,12 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '../../domain/repositories/user-repository.interface';
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from '../dto/auth.dto';
+import {
+  LoginDto,
+  ValidatedUser,
+  JwtPayload,
+  LoginResponse,
+} from '../dto/auth.dto';
 import {
   UserNotFoundException,
   InvalidPasswordException,
@@ -24,8 +29,12 @@ export class AuthService {
    * @throws InvalidPasswordException si la contraseña es incorrecta
    * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
    */
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<ValidatedUser> {
     const user = await this.userRepository.findByUsername(username);
+
     if (!user) {
       throw new UserNotFoundException();
     }
@@ -44,12 +53,12 @@ export class AuthService {
    * @throws InvalidPasswordException si la contraseña es incorrecta
    * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
    */
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto.username, loginDto.password);
-    const payload = {
+    const payload: JwtPayload = {
       username: user.username,
       sub: user.id,
-      roles: user.UserRole.map((ur) => ur.role.name),
+      roles: user.UserRole.map((ur) => ur.role.nombre),
     };
     return {
       access_token: this.jwtService.sign(payload),
