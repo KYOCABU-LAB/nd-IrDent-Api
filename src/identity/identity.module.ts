@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from 'src/shared/prisma/prisma.module';
 import { AuthService } from './application/services/auth.service';
 import { RoleService } from './application/services/role.service';
+import { UserService } from './application/services/user.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from './infrastructure/guards/roles.guard';
@@ -26,6 +27,7 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
   providers: [
     AuthService,
     RoleService,
+    UserService,
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
