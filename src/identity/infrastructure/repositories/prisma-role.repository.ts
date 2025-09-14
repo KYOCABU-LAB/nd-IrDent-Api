@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleRepository } from '../../domain/repositories/role-repository.interface';
 import { Role } from 'generated/prisma';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'generated/prisma';
 
 @Injectable()
 export class PrismaRoleRepository extends RoleRepository {
