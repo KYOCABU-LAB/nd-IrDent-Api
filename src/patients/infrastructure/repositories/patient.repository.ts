@@ -1,4 +1,3 @@
-// patients/infrastructure/repositories/patient.repository.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, Prisma } from 'generated/prisma';
 import type {
@@ -6,7 +5,7 @@ import type {
   UpdatePatientDto,
   PatientResponseDto,
 } from 'src/patients/application/dto/patient';
-import { PatientRepository } from 'src/patients/domain/repositories/patient.interface';
+import { PatientRepository, type PatientListFilters } from 'src/patients/domain/repositories/patient.interface';
 
 @Injectable()
 class PatientRepositoryImpl extends PatientRepository {
@@ -70,33 +69,35 @@ class PatientRepositoryImpl extends PatientRepository {
     return !!dup;
   }
 
+  // 👇 Firma y lógica alineadas con la interface (sin q, con filters)
   async list(params: {
     skip: number;
     take: number;
-    q?: string;
+    filters?: PatientListFilters;
   }): Promise<{ data: PatientResponseDto[]; total: number }> {
-    const skip = Number(params?.skip ?? 0);
-    const take = Math.min(Number(params?.take ?? 10), 100);
-    const q = params?.q?.trim();
+    const { filters } = params;
 
-    const where: Prisma.PacienteWhereInput = q
-      ? {
-          OR: [
-            { nombre: { contains: q } },
-            { apellido_paterno: { contains: q } },
-            { apellido_materno: { contains: q } },
-            { numero_documento: { contains: q } },
-            { email: { contains: q } },
-          ],
-        }
-      : {};
+    const whereParts: Prisma.PacienteWhereInput[] = [];
+
+    if (filters?.nombre) {
+      whereParts.push({ nombre: { contains: filters.nombre } });
+    }
+    if (filters?.numero_documento) {
+      whereParts.push({ numero_documento: { equals: filters.numero_documento } });
+    }
+    if (filters?.email) {
+      whereParts.push({ email: { contains: filters.email } });
+    }
+
+    const where: Prisma.PacienteWhereInput =
+      whereParts.length ? { AND: whereParts } : {};
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.paciente.findMany({
         where,
         orderBy: { fecha_creacion: 'desc' },
-        skip,
-        take,
+        skip: params.skip,
+        take: params.take,
       }),
       this.prisma.paciente.count({ where }),
     ]);
