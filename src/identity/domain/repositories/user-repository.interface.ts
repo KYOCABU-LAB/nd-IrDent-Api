@@ -1,4 +1,4 @@
-import { Role, User, UserRole } from 'generated/prisma';
+import { RefreshToken, Role, User, UserRole } from 'generated/prisma';
 
 export type FullUser = User & {
   UserRole: (UserRole & { role: Role })[];
@@ -18,4 +18,8 @@ export abstract class UserRepository {
   abstract findByUsername(username: string): Promise<FullUser | null>;
   abstract create(userData: CreateUserData): Promise<User>;
   abstract assignRole(userId: number, roleId: number): Promise<UserRole>;
+  abstract createRefreshToken(data: { token: string; userId: number; expiresAt: Date }): Promise<RefreshToken>;
+  abstract findRefreshToken(token: string): Promise<RefreshToken | null>;
+  abstract deleteRefreshToken(token: string): Promise<void>;
+  abstract findById(id: number): Promise<FullUser | null>;
 }

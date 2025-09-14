@@ -37,9 +37,27 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
   exports: [AuthService, RoleService, JwtAuthGuard, RolesGuard],
 })
 export class IdentityModule implements OnModuleInit {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    private readonly userService: UserService,
+  ) {}
 
   async onModuleInit() {
     await this.roleService.initializeRoles();
+
+    const adminUsername = 'admin';
+    const existingAdmin = await this.userService.findByUsername(adminUsername);
+    if (!existingAdmin) {
+      const dto = {
+        username: adminUsername,
+        password: 'Admin123',
+        email: 'admin@gmail.com',
+        nombre: 'Admin',
+        apellido: 'System',
+        roleName: 'admin',
+      };
+      await this.userService.createUser(dto);
+      console.log('Usuario por defecto creado');
+    }
   }
 }
