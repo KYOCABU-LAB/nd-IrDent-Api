@@ -35,11 +35,6 @@ export class AuthService {
     if (!UserValidator.validateEmail(email)) {
       throw new InvalidPasswordException('El formato del email no es válido');
     }
-    if (!UserValidator.validatePassword(password)) {
-      throw new InvalidPasswordException(
-        'La contraseña no cumple con los requisitos de seguridad',
-      );
-    }
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
