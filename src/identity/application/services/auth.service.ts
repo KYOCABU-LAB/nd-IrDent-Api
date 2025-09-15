@@ -13,6 +13,7 @@ import {
   InvalidPasswordException,
 } from '../exceptions/auth.exceptions';
 import { v4 as uuidv4 } from 'uuid';
+import { UserValidator } from '../../domain/validators/user.validator';
 
 @Injectable()
 export class AuthService {
@@ -30,14 +31,21 @@ export class AuthService {
    * @throws InvalidPasswordException si la contraseña es incorrecta
    * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    */
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<ValidatedUser> {
+  async validateUser(email: string, password: string): Promise<ValidatedUser> {
+    if (!UserValidator.validateEmail(email)) {
+      throw new InvalidPasswordException('El formato del email no es válido');
+    }
+    if (!UserValidator.validatePassword(password)) {
+      throw new InvalidPasswordException(
+        'La contraseña no cumple con los requisitos de seguridad',
+      );
+    }
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
-      throw new UserNotFoundException();
+      throw new UserNotFoundException(
+        'El email no existe, por favor registrese',
+      );
     }
     if (!(await bcrypt.compare(password, user.password_hash))) {
       throw new InvalidPasswordException();
