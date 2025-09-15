@@ -13,6 +13,7 @@ import {
   InvalidPasswordException,
 } from '../exceptions/auth.exceptions';
 import { v4 as uuidv4 } from 'uuid';
+import { UserValidator } from '../../domain/validators/user.validator';
 
 @Injectable()
 export class AuthService {
@@ -22,42 +23,44 @@ export class AuthService {
   ) {}
 
   /**
-   *  Validar un usuario por su nombre de usuario y contraseña
-   * @param username nombre de usuario
+   *  Validar un usuario por su correo electrónico y contraseña
+   * @param email correo electrónico del usuario
    * @param password contraseña
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    * @throws UserNotFoundException si el usuario no existe
    * @throws InvalidPasswordException si la contraseña es incorrecta
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    */
-  async validateUser(
-    username: string,
-    password: string,
-  ): Promise<ValidatedUser> {
-    const user = await this.userRepository.findByUsername(username);
+  async validateUser(email: string, password: string): Promise<ValidatedUser> {
+    if (!UserValidator.validateEmail(email)) {
+      throw new InvalidPasswordException('El formato del email no es válido');
+    }
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
-      throw new UserNotFoundException();
+      throw new UserNotFoundException(
+        'El email no existe, por favor registrese',
+      );
     }
     if (!(await bcrypt.compare(password, user.password_hash))) {
-      throw new InvalidPasswordException();
+      throw new InvalidPasswordException('La contraseña es incorrecta');
     }
     const { password_hash, ...result } = user;
     return result;
   }
 
   /**
-   *  Iniciar sesión con un nombre de usuario y contraseña
+   *  Iniciar sesión con un correo electrónico y contraseña
    * @param loginDto objeto de inicio de sesión
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    * @throws UserNotFoundException si el usuario no existe
    * @throws InvalidPasswordException si la contraseña es incorrecta
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    */
   async login(loginDto: LoginDto, ip: string): Promise<LoginResponse> {
-    const user = await this.validateUser(loginDto.username, loginDto.password);
+    const user = await this.validateUser(loginDto.email, loginDto.password);
     const payload: JwtPayload = {
-      username: user.username,
+      email: user.email,
       sub: user.id,
       roles: user.UserRole.map((ur) => ur.role.nombre),
       ip,
@@ -79,17 +82,17 @@ export class AuthService {
   async refresh(refreshToken: string, ip: string): Promise<LoginResponse> {
     const token = await this.userRepository.findRefreshToken(refreshToken);
     if (!token || token.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new UnauthorizedException('Token de refresco inválido o expirado');
     }
     const user = await this.userRepository.findById(token.userId);
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('Usuario no encontrado');
     }
     // eliminar el token anterior
     await this.userRepository.deleteRefreshToken(refreshToken);
     // se genera un nuevo token
     const payload: JwtPayload = {
-      username: user.username,
+      email: user.email,
       sub: user.id,
       roles: user.UserRole.map((ur) => ur.role.nombre),
       ip,

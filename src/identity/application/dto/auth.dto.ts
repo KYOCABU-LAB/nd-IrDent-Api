@@ -1,14 +1,21 @@
 import { Role, User, UserRole } from 'generated/prisma';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 /**
- * interface para representar los datos de inicio de sesión
+ * clase para representar los datos de inicio de sesión
  * @export
- * @interface LoginDto
- * @property {string} username - nombre de usuario
+ * @class LoginDto
+ * @property {string} email - correo electrónico del usuario
  * @property {string} password - contraseña
  */
-export interface LoginDto {
-  username: string;
+export class LoginDto {
+  @IsEmail({}, { message: 'El formato del email no es válido' })
+  @IsNotEmpty({ message: 'El email es requerido' })
+  email: string;
+
+  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'La contraseña es requerida' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
   password: string;
 }
 
@@ -41,7 +48,7 @@ export interface LoginResponse {
  * @property {string} ip - dirección IP del usuario
  */
 export interface JwtPayload {
-  username: string;
+  email: string;
   sub: number;
   roles: string[];
   ip?: string;

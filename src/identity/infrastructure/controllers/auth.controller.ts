@@ -9,14 +9,10 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthService } from 'src/identity/application/services/auth.service';
+import { LoginDto } from 'src/identity/application/dto/auth.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
-
-interface LoginDto {
-  username: string;
-  password: string;
-}
 
 @Controller('auth')
 export class AuthController {
