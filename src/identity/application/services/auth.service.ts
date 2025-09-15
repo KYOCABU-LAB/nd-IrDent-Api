@@ -65,7 +65,7 @@ export class AuthService {
   async login(loginDto: LoginDto, ip: string): Promise<LoginResponse> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     const payload: JwtPayload = {
-      username: user.username,
+      email: user.email,
       sub: user.id,
       roles: user.UserRole.map((ur) => ur.role.nombre),
       ip,
@@ -97,7 +97,7 @@ export class AuthService {
     await this.userRepository.deleteRefreshToken(refreshToken);
     // se genera un nuevo token
     const payload: JwtPayload = {
-      username: user.username,
+      email: user.email,
       sub: user.id,
       roles: user.UserRole.map((ur) => ur.role.nombre),
       ip,

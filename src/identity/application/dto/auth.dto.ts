@@ -48,7 +48,7 @@ export interface LoginResponse {
  * @property {string} ip - dirección IP del usuario
  */
 export interface JwtPayload {
-  username: string;
+  email: string;
   sub: number;
   roles: string[];
   ip?: string;
