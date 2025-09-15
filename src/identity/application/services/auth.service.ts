@@ -79,11 +79,11 @@ export class AuthService {
   async refresh(refreshToken: string, ip: string): Promise<LoginResponse> {
     const token = await this.userRepository.findRefreshToken(refreshToken);
     if (!token || token.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+      throw new UnauthorizedException('Token de refresco inválido o expirado');
     }
     const user = await this.userRepository.findById(token.userId);
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('Usuario no encontrado');
     }
     // eliminar el token anterior
     await this.userRepository.deleteRefreshToken(refreshToken);
