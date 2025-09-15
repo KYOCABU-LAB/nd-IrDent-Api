@@ -48,7 +48,7 @@ export class AuthService {
       );
     }
     if (!(await bcrypt.compare(password, user.password_hash))) {
-      throw new InvalidPasswordException();
+      throw new InvalidPasswordException('La contraseña es incorrecta');
     }
     const { password_hash, ...result } = user;
     return result;
