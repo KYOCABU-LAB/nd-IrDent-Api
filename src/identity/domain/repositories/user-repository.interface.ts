@@ -16,6 +16,7 @@ export type CreateUserData = {
 
 export abstract class UserRepository {
   abstract findByUsername(username: string): Promise<FullUser | null>;
+  abstract findByEmail(email: string): Promise<FullUser | null>;
   abstract create(userData: CreateUserData): Promise<User>;
   abstract assignRole(userId: number, roleId: number): Promise<UserRole>;
   abstract createRefreshToken(data: { token: string; userId: number; expiresAt: Date }): Promise<RefreshToken>;

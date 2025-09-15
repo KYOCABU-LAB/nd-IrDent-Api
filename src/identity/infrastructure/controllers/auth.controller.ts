@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 
 interface LoginDto {
-  username: string;
+  email: string;
   password: string;
 }
 

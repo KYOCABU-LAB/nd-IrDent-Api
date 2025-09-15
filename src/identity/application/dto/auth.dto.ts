@@ -4,11 +4,11 @@ import { Role, User, UserRole } from 'generated/prisma';
  * interface para representar los datos de inicio de sesión
  * @export
  * @interface LoginDto
- * @property {string} username - nombre de usuario
+ * @property {string} email - correo electrónico del usuario
  * @property {string} password - contraseña
  */
 export interface LoginDto {
-  username: string;
+  email: string;
   password: string;
 }
 

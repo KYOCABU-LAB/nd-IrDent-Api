@@ -9,8 +9,15 @@ export class PrismaUserRepository extends UserRepository {
   }
 
   async findByUsername(username: string): Promise<FullUser | null> {
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: { username },
+      include: { UserRole: { include: { role: true } } },
+    });
+  }
+
+  async findByEmail(email: string): Promise<FullUser | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
       include: { UserRole: { include: { role: true } } },
     });
   }

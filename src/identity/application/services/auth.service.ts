@@ -22,19 +22,19 @@ export class AuthService {
   ) {}
 
   /**
-   *  Validar un usuario por su nombre de usuario y contraseña
-   * @param username nombre de usuario
+   *  Validar un usuario por su correo electrónico y contraseña
+   * @param email correo electrónico del usuario
    * @param password contraseña
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    * @throws UserNotFoundException si el usuario no existe
    * @throws InvalidPasswordException si la contraseña es incorrecta
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    */
   async validateUser(
-    username: string,
+    email: string,
     password: string,
   ): Promise<ValidatedUser> {
-    const user = await this.userRepository.findByUsername(username);
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       throw new UserNotFoundException();
@@ -47,15 +47,15 @@ export class AuthService {
   }
 
   /**
-   *  Iniciar sesión con un nombre de usuario y contraseña
+   *  Iniciar sesión con un correo electrónico y contraseña
    * @param loginDto objeto de inicio de sesión
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    * @throws UserNotFoundException si el usuario no existe
    * @throws InvalidPasswordException si la contraseña es incorrecta
-   * @returns un objeto de usuario si el nombre de usuario y la contraseña son válidos
+   * @returns un objeto de usuario si el correo electrónico y la contraseña son válidos
    */
   async login(loginDto: LoginDto, ip: string): Promise<LoginResponse> {
-    const user = await this.validateUser(loginDto.username, loginDto.password);
+    const user = await this.validateUser(loginDto.email, loginDto.password);
     const payload: JwtPayload = {
       username: user.username,
       sub: user.id,
