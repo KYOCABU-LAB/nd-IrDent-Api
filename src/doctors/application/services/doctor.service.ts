@@ -34,4 +34,21 @@ export class DoctorService {
     }
     return this.doctorRepository.createDoctor(data);
   }
+  
+  //OBTENER DOCTOR POR ID
+  async getDoctorById(id: number): Promise<DoctorResponseDto> {
+    return this.doctorRepository.findById(id);
+  }
+  //OBTENER TODOS LOS DOCTORES
+  async getAllDoctors(): Promise<DoctorResponseDto[]> {
+    return this.doctorRepository.findAll();
+  }
+  //ACTUALIZAR DOCTOR
+  async updateDoctor(id: number, data: Partial<Doctor>): Promise<DoctorResponseDto> {
+    return this.doctorRepository.updateDoctor(id, data);
+  }
+  //ELIMINAR DOCTOR
+  async deleteDoctor(id: number): Promise<void> {
+    return this.doctorRepository.deleteDoctor(id);
+  }
 }

@@ -34,7 +34,13 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
     { provide: UserRepository, useClass: PrismaUserRepository },
     { provide: RoleRepository, useClass: PrismaRoleRepository },
   ],
-  exports: [AuthService, RoleService, JwtAuthGuard, RolesGuard],
+  exports: [
+    AuthService, 
+    RoleService,
+    UserService, 
+    JwtAuthGuard, 
+    RolesGuard,
+  ],
 })
 export class IdentityModule implements OnModuleInit {
   constructor(

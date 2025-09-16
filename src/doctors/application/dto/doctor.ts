@@ -1,4 +1,6 @@
 export interface Doctor{
+    //DATOS USUARIO
+    
     numero_documento: string;
     user_id:number;
     tipo_documento: 'DNI' | 'CARNETE_EXTRANJERIA' | 'OTRO' | 'PASAPORTE';
