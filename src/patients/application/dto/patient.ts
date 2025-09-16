@@ -1,4 +1,6 @@
 import { EnumEstadocivil, EnumGenero, EnumTipoDocumento } from 'generated/prisma';
+import type { CreateContactDto } from './contact.dto';
+import type { CreateAddressDto } from './address.dto';
 
 export interface CreatePatientDto {
   numero_documento: string;
@@ -46,6 +48,11 @@ export interface PatientResponseDto {
   ocupacion: string;
   fecha_creacion: Date;
   fecha_actualizacion: Date;
+}
+
+export interface CreatePatientWithRelationsDto extends CreatePatientDto {
+  contactos?: CreateContactDto[];
+  direcciones?: CreateAddressDto[];
 }
 
 

@@ -2,8 +2,10 @@ import type {
   CreatePatientDto,
   UpdatePatientDto,
   PatientResponseDto,
-  
+  CreatePatientWithRelationsDto,
 } from 'src/patients/application/dto/patient';
+import type { CreateContactDto, UpdateContactDto } from 'src/patients/application/dto/contact.dto';
+import type { CreateAddressDto, UpdateAddressDto } from 'src/patients/application/dto/address.dto';
 
 export type PatientListFilters = {
   nombre?: string;
@@ -12,7 +14,7 @@ export type PatientListFilters = {
 };
 
 export abstract class PatientRepository {
-  abstract create(data: CreatePatientDto): Promise<PatientResponseDto>;
+  abstract create(data: CreatePatientWithRelationsDto): Promise<PatientResponseDto>;
   abstract update(id: number, data: UpdatePatientDto): Promise<PatientResponseDto>;
   abstract delete(id: number): Promise<void>;
   abstract clearAll(): Promise<number>; 
@@ -45,4 +47,13 @@ export abstract class PatientRepository {
     data: PatientResponseDto[];
     total: number;
   }>;
+
+
+  abstract addContact(pacienteId: number, data: CreateContactDto): Promise<void>;
+  abstract updateContact(pacienteId: number, contactoId: number, data: UpdateContactDto): Promise<void>;
+  abstract deleteContact(pacienteId: number, contactoId: number): Promise<void>;
+  
+  abstract addAddress(pacienteId: number, data: CreateAddressDto): Promise<void>;
+  abstract updateAddress(pacienteId: number, direccionId: number, data: UpdateAddressDto): Promise<void>;
+  abstract deleteAddress(pacienteId: number, direccionId: number): Promise<void>;
 }

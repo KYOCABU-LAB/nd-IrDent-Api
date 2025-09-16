@@ -4,7 +4,10 @@ import type {
   CreatePatientDto,
   UpdatePatientDto,
   PatientResponseDto,
+  CreatePatientWithRelationsDto,
 } from 'src/patients/application/dto/patient';
+import type { CreateContactDto, UpdateContactDto } from 'src/patients/application/dto/contact.dto';
+import type { CreateAddressDto, UpdateAddressDto } from 'src/patients/application/dto/address.dto';
 import {
   PatientAlreadyExistsException,
   PatientInvalidDataException,
@@ -25,7 +28,7 @@ export class PatientService {
    * @throws PatientInvalidDataException - si los datos del paciente son inválidos.
    * @throws PatientAlreadyExistsException - si el paciente ya existe en la base de datos.
    */
-  async create(data: CreatePatientDto): Promise<PatientResponseDto> {
+  async create(data: CreatePatientWithRelationsDto): Promise<PatientResponseDto> {
     if (
       !PatientValidator.nombreRequerido(data.nombre) ||
       !PatientValidator.docValido(data.numero_documento, data.tipo_documento) ||
@@ -45,6 +48,7 @@ export class PatientService {
     data.tipo_documento ??= EnumTipoDocumento.DNI;
     data.genero ??= EnumGenero.OTRO;
 
+    // podrías validar aquí contactos/direcciones si quieres (teléfono requerido, etc.)
     return this.repo.create(data);
   }
 
@@ -129,7 +133,7 @@ export class PatientService {
    * @param {PatientListQuery} query - objeto que contiene los parámetros de búsqueda
    * @returns - promesa que se resuelve con la lista de pacientes encontrados
    */
-  async list(query: PatientListQuery) {
+   async list(query: PatientListQuery) {
     const page = Math.max(1, Number(query?.page ?? 1));
     const size = Math.min(Number(query?.size ?? 10), 100);
     const skip = (page - 1) * size;
@@ -140,5 +144,41 @@ export class PatientService {
       take,
       filters: query?.filters,
     });
+  }
+
+   async addContact(pacienteId: number, data: CreateContactDto) {
+    if (!PatientValidator.isTelefono(data.telefono)) {
+      throw new PatientInvalidDataException('Teléfono inválido');
+    }
+    await this.repo.addContact(pacienteId, data);
+    return { ok: true };
+  }
+
+  async updateContact(pacienteId: number, contactoId: number, data: UpdateContactDto) {
+    if (data.telefono && !PatientValidator.isTelefono(data.telefono)) {
+      throw new PatientInvalidDataException('Teléfono inválido');
+    }
+    await this.repo.updateContact(pacienteId, contactoId, data);
+    return { ok: true };
+  }
+
+  async deleteContact(pacienteId: number, contactoId: number) {
+    await this.repo.deleteContact(pacienteId, contactoId);
+    return { ok: true };
+  }
+
+  async addAddress(pacienteId: number, data: CreateAddressDto) {
+    await this.repo.addAddress(pacienteId, data);
+    return { ok: true };
+  }
+
+  async updateAddress(pacienteId: number, direccionId: number, data: UpdateAddressDto) {
+    await this.repo.updateAddress(pacienteId, direccionId, data);
+    return { ok: true };
+  }
+
+  async deleteAddress(pacienteId: number, direccionId: number) {
+    await this.repo.deleteAddress(pacienteId, direccionId);
+    return { ok: true };
   }
 }
