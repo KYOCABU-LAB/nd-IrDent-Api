@@ -92,13 +92,21 @@ export class AuthService {
       expiresAt,
     });
 
+    const roles = user.UserRole.map((ur) => ur.role.nombre);
+
     this.logger.log(
-      `Login exitoso para usuario ID: ${user.id}, email: ${user.email}, roles: [${user.UserRole.map((ur) => ur.role.nombre).join(', ')}]`,
+      `Login exitoso para usuario ID: ${user.id}, email: ${user.email}, roles: [${roles.join(', ')}]`,
     );
 
     return {
       access_token,
       refresh_token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: `${user.nombre} ${user.apellido}`,
+        roles,
+      },
     };
   }
 
@@ -148,6 +156,12 @@ export class AuthService {
     return {
       access_token,
       refresh_token: newRefreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: `${user.nombre} ${user.apellido}`,
+        roles: user.UserRole.map((ur) => ur.role.nombre),
+      },
     };
   }
 }

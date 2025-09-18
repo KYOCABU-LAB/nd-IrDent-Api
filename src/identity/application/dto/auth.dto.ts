@@ -32,10 +32,17 @@ export type ValidatedUser = Omit<User, 'password_hash'> & {
  * @interface LoginResponse
  * @property {string} access_token - token de acceso
  * @property {string} refresh_token - token de refresco
+ * @property {object} user - información del usuario
  */
 export interface LoginResponse {
   access_token: string;
   refresh_token: string;
+  user: {
+    id: number;
+    email: string;
+    name: string;
+    roles: string[];
+  };
 }
 
 /**
