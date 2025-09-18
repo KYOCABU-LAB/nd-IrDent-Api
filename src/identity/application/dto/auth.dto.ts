@@ -42,7 +42,7 @@ export interface LoginResponse {
  * interface para representar el payload del JWT
  * @export
  * @interface JwtPayload
- * @property {string} username - nombre de usuario
+ * @property {string} email - correo electrónico del usuario
  * @property {number} sub - id del usuario
  * @property {string[]} roles - roles del usuario
  * @property {string} ip - dirección IP del usuario
