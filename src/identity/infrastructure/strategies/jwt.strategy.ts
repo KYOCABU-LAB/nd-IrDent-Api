@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from 'src/identity/application/dto/auth.dto';
 import { Request } from 'express';
+import { getClientIp } from 'src/shared/utils/ip.utils';
 
 /**
  * clase JwtStrategy para validar tokens
@@ -38,9 +39,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @throws UnauthorizedException si el token no es válido
    */
   async validate(req: Request, payload: JwtPayload) {
-    if (payload.ip && payload.ip !== req.ip) {
+    const clientIp = getClientIp(req);
+
+    if (payload.ip && payload.ip !== clientIp) {
       throw new UnauthorizedException('La dirección IP no coincide');
     }
+
     return {
       userId: payload.sub,
       email: payload.email,
