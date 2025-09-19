@@ -18,6 +18,7 @@ model TestUser {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
+  jaja  String
 }
 
 /**
