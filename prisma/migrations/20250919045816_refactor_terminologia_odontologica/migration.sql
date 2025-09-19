@@ -140,7 +140,7 @@ CREATE TABLE `Diente` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TipoMatriz` (
+CREATE TABLE `ConfiguracionSuperficie` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `tipo_diente` ENUM('INCISIVO', 'CANINO', 'PREMOLAR', 'MOLAR') NOT NULL,
     `filas` INTEGER NOT NULL DEFAULT 3,
@@ -149,14 +149,14 @@ CREATE TABLE `TipoMatriz` (
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `fecha_actualizacion` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `TipoMatriz_tipo_diente_key`(`tipo_diente`),
+    UNIQUE INDEX `ConfiguracionSuperficie_tipo_diente_key`(`tipo_diente`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `PosicionMatriz` (
+CREATE TABLE `SuperficieDental` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tipoMatrizId` INTEGER NOT NULL,
+    `configuracionSuperficieId` INTEGER NOT NULL,
     `fila` INTEGER NOT NULL,
     `columna` INTEGER NOT NULL,
     `codigo` VARCHAR(191) NOT NULL,
@@ -171,14 +171,14 @@ CREATE TABLE `PosicionMatriz` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `MatrizDiente` (
+CREATE TABLE `ConfiguracionDiente` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `dienteId` INTEGER NOT NULL,
-    `tipoMatrizId` INTEGER NOT NULL,
+    `configuracionSuperficieId` INTEGER NOT NULL,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `fecha_actualizacion` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `MatrizDiente_dienteId_tipoMatrizId_key`(`dienteId`, `tipoMatrizId`),
+    UNIQUE INDEX `ConfiguracionDiente_dienteId_configuracionSuperficieId_key`(`dienteId`, `configuracionSuperficieId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -200,7 +200,7 @@ CREATE TABLE `Hallazgos` (
 CREATE TABLE `HallazgosPaciente` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `id_diente` INTEGER NOT NULL,
-    `id_posicion_matriz` INTEGER NULL,
+    `id_superficie_dental` INTEGER NULL,
     `id_paciente` INTEGER NOT NULL,
     `id_doctor` INTEGER NOT NULL,
     `id_hallazgo` INTEGER NOT NULL,
@@ -316,19 +316,19 @@ ALTER TABLE `DireccionPaciente` ADD CONSTRAINT `DireccionPaciente_pacienteId_fke
 ALTER TABLE `Doctor` ADD CONSTRAINT `Doctor_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `PosicionMatriz` ADD CONSTRAINT `PosicionMatriz_tipoMatrizId_fkey` FOREIGN KEY (`tipoMatrizId`) REFERENCES `TipoMatriz`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `SuperficieDental` ADD CONSTRAINT `SuperficieDental_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatrizDiente` ADD CONSTRAINT `MatrizDiente_dienteId_fkey` FOREIGN KEY (`dienteId`) REFERENCES `Diente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_dienteId_fkey` FOREIGN KEY (`dienteId`) REFERENCES `Diente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatrizDiente` ADD CONSTRAINT `MatrizDiente_tipoMatrizId_fkey` FOREIGN KEY (`tipoMatrizId`) REFERENCES `TipoMatriz`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_diente_fkey` FOREIGN KEY (`id_diente`) REFERENCES `Diente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_posicion_matriz_fkey` FOREIGN KEY (`id_posicion_matriz`) REFERENCES `PosicionMatriz`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_superficie_dental_fkey` FOREIGN KEY (`id_superficie_dental`) REFERENCES `SuperficieDental`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_paciente_fkey` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
