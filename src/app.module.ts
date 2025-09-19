@@ -8,6 +8,7 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 import { DoctorsModule } from './doctors/doctors.module';
 import { IdentityModule } from './identity/identity.module';
+import { RegistrosDentalesModule } from './dentalrecords/registrosdentales.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { IdentityModule } from './identity/identity.module';
     DoctorsModule,
     PrismaModule,
     IdentityModule,
+    RegistrosDentalesModule,
   ],
   controllers: [AppController],
   providers: [
