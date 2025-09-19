@@ -162,56 +162,56 @@ enum EstadoDoctor {
  * Dientes
  */
 model Diente {
-  id                  Int                 @id @default(autoincrement())
-  numero_diente       String              @unique
+  id                  Int                   @id @default(autoincrement())
+  numero_diente       String                @unique
   nombre_diente       String
   descripcion         String?
   edad_diente         String?
   tipo_diente         EnumTipoDiente
-  fecha_creacion      DateTime            @default(now())
-  fecha_actualizacion DateTime            @updatedAt
-  MatrizDiente        MatrizDiente[]
+  fecha_creacion      DateTime              @default(now())
+  fecha_actualizacion DateTime              @updatedAt
+  ConfiguracionDiente ConfiguracionDiente[]
   hallazgos_paciente  HallazgosPaciente[]
 }
 
-model TipoMatriz {
-  id                  Int              @id @default(autoincrement())
-  tipo_diente         EnumTipoDiente   @unique
-  filas               Int              @default(3)
-  columnas            Int              @default(3)
+model ConfiguracionSuperficie {
+  id                  Int                   @id @default(autoincrement())
+  tipo_diente         EnumTipoDiente        @unique
+  filas               Int                   @default(3)
+  columnas            Int                   @default(3)
   descripcion         String
-  fecha_creacion      DateTime         @default(now())
-  fecha_actualizacion DateTime         @updatedAt
-  PosicionMatriz      PosicionMatriz[]
-  MatrizDiente        MatrizDiente[]
+  fecha_creacion      DateTime              @default(now())
+  fecha_actualizacion DateTime              @updatedAt
+  SuperficieDental    SuperficieDental[]
+  ConfiguracionDiente ConfiguracionDiente[]
 }
 
-model PosicionMatriz {
-  id                   Int                 @id @default(autoincrement())
-  tipo_matriz          TipoMatriz          @relation(fields: [tipoMatrizId], references: [id])
-  tipoMatrizId         Int
-  fila                 Int
-  columna              Int
-  codigo               String
-  cara_anatomica       EnumCaraAnatomica
-  ubicacion_especifica String?
-  es_activa            Boolean             @default(true)
-  descripcion          String
-  fecha_creacion       DateTime            @default(now())
-  fecha_actualizacion  DateTime            @updatedAt
-  hallazgos_paciente   HallazgosPaciente[]
+model SuperficieDental {
+  id                        Int                     @id @default(autoincrement())
+  configuracion_superficie  ConfiguracionSuperficie @relation(fields: [configuracionSuperficieId], references: [id])
+  configuracionSuperficieId Int
+  fila                      Int
+  columna                   Int
+  codigo                    String
+  cara_anatomica            EnumCaraAnatomica
+  ubicacion_especifica      String?
+  es_activa                 Boolean                 @default(true)
+  descripcion               String
+  fecha_creacion            DateTime                @default(now())
+  fecha_actualizacion       DateTime                @updatedAt
+  hallazgos_paciente        HallazgosPaciente[]
 }
 
-model MatrizDiente {
-  id                  Int        @id @default(autoincrement())
-  diente              Diente     @relation(fields: [dienteId], references: [id])
-  dienteId            Int
-  tipo_matriz         TipoMatriz @relation(fields: [tipoMatrizId], references: [id])
-  tipoMatrizId        Int
-  fecha_creacion      DateTime   @default(now())
-  fecha_actualizacion DateTime   @updatedAt
+model ConfiguracionDiente {
+  id                        Int                     @id @default(autoincrement())
+  diente                    Diente                  @relation(fields: [dienteId], references: [id])
+  dienteId                  Int
+  configuracion_superficie  ConfiguracionSuperficie @relation(fields: [configuracionSuperficieId], references: [id])
+  configuracionSuperficieId Int
+  fecha_creacion            DateTime                @default(now())
+  fecha_actualizacion       DateTime                @updatedAt
 
-  @@unique([dienteId, tipoMatrizId])
+  @@unique([dienteId, configuracionSuperficieId])
 }
 
 /**
@@ -232,22 +232,22 @@ model Hallazgos {
 }
 
 model HallazgosPaciente {
-  id                  Int      @id @default(autoincrement())
-  id_diente           Int
-  id_posicion_matriz  Int?
-  id_paciente         Int
-  id_doctor           Int
-  id_hallazgo         Int
-  observaciones       String?  @db.Text
-  fecha_creacion      DateTime @default(now())
-  fecha_actualizacion DateTime @updatedAt
+  id                   Int      @id @default(autoincrement())
+  id_diente            Int
+  id_superficie_dental Int?
+  id_paciente          Int
+  id_doctor            Int
+  id_hallazgo          Int
+  observaciones        String?  @db.Text
+  fecha_creacion       DateTime @default(now())
+  fecha_actualizacion  DateTime @updatedAt
 
   // fk relaciones
-  diente          Diente          @relation(fields: [id_diente], references: [id])
-  posicion_matriz PosicionMatriz? @relation(fields: [id_posicion_matriz], references: [id])
-  paciente        Paciente        @relation(fields: [id_paciente], references: [id])
-  doctor          Doctor          @relation(fields: [id_doctor], references: [id])
-  hallazgo        Hallazgos       @relation(fields: [id_hallazgo], references: [id])
+  diente            Diente            @relation(fields: [id_diente], references: [id])
+  superficie_dental SuperficieDental? @relation(fields: [id_superficie_dental], references: [id])
+  paciente          Paciente          @relation(fields: [id_paciente], references: [id])
+  doctor            Doctor            @relation(fields: [id_doctor], references: [id])
+  hallazgo          Hallazgos         @relation(fields: [id_hallazgo], references: [id])
 
   // indices
   @@index([id_paciente, id_diente], name: "idx_paciente_diente")
