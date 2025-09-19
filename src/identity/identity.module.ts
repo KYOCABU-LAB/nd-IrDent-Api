@@ -2,7 +2,6 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from 'src/shared/prisma/prisma.module';
 import { AuthService } from './application/services/auth.service';
 import { RoleService } from './application/services/role.service';
 import { UserService } from './application/services/user.service';
@@ -39,7 +38,6 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
         limit: 100, // 100 requests por minuto
       },
     ]),
-    PrismaModule,
   ],
   controllers: [AuthController],
   providers: [
