@@ -3,6 +3,7 @@ CREATE TABLE `TestUser` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NULL,
+    `jaja` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `TestUser_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -301,28 +302,28 @@ CREATE TABLE `RefreshToken` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ContactoPaciente` ADD CONSTRAINT `ContactoPaciente_pacienteId_fkey` FOREIGN KEY (`pacienteId`) REFERENCES `Paciente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ContactoPaciente` ADD CONSTRAINT `ContactoPaciente_pacienteId_fkey` FOREIGN KEY (`pacienteId`) REFERENCES `Paciente`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `DireccionPaciente` ADD CONSTRAINT `DireccionPaciente_pacienteId_fkey` FOREIGN KEY (`pacienteId`) REFERENCES `Paciente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `DireccionPaciente` ADD CONSTRAINT `DireccionPaciente_pacienteId_fkey` FOREIGN KEY (`pacienteId`) REFERENCES `Paciente`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Doctor` ADD CONSTRAINT `Doctor_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `SuperficieDental` ADD CONSTRAINT `SuperficieDental_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `SuperficieDental` ADD CONSTRAINT `SuperficieDental_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_dienteId_fkey` FOREIGN KEY (`dienteId`) REFERENCES `Diente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_dienteId_fkey` FOREIGN KEY (`dienteId`) REFERENCES `Diente`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracionDiente` ADD CONSTRAINT `ConfiguracionDiente_configuracionSuperficieId_fkey` FOREIGN KEY (`configuracionSuperficieId`) REFERENCES `ConfiguracionSuperficie`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_diente_fkey` FOREIGN KEY (`id_diente`) REFERENCES `Diente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -331,13 +332,13 @@ ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_diente_fkey
 ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_superficie_dental_fkey` FOREIGN KEY (`id_superficie_dental`) REFERENCES `SuperficieDental`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_paciente_fkey` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_paciente_fkey` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_doctor_fkey` FOREIGN KEY (`id_doctor`) REFERENCES `Doctor`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_hallazgo_fkey` FOREIGN KEY (`id_hallazgo`) REFERENCES `Hallazgos`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `HallazgosPaciente` ADD CONSTRAINT `HallazgosPaciente_id_hallazgo_fkey` FOREIGN KEY (`id_hallazgo`) REFERENCES `Hallazgos`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PlanTratamiento` ADD CONSTRAINT `PlanTratamiento_id_paciente_fkey` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -349,7 +350,7 @@ ALTER TABLE `Tratamiento` ADD CONSTRAINT `Tratamiento_id_plan_tratamiento_fkey` 
 ALTER TABLE `Tratamiento` ADD CONSTRAINT `Tratamiento_id_doctor_fkey` FOREIGN KEY (`id_doctor`) REFERENCES `Doctor`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Pago` ADD CONSTRAINT `Pago_id_tratamiento_fkey` FOREIGN KEY (`id_tratamiento`) REFERENCES `Tratamiento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Pago` ADD CONSTRAINT `Pago_id_tratamiento_fkey` FOREIGN KEY (`id_tratamiento`) REFERENCES `Tratamiento`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `RegistroClinico` ADD CONSTRAINT `RegistroClinico_id_paciente_fkey` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
