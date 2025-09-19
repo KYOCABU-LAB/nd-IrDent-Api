@@ -1,4 +1,4 @@
--- Active: 1748041355668@@127.0.0.1@3306@bd_irdent
+-- Active: 1752788997950@@127.0.0.1@3306@bd_irdent
 
 -- tablas usuarios y roles
 CREATE TABLE Role (
@@ -56,7 +56,7 @@ CREATE TABLE Paciente (
     ocupacion VARCHAR(100),
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE ContactoPaciente (
@@ -100,7 +100,7 @@ CREATE TABLE Doctor (
     email VARCHAR(100),
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- tablas dientes
@@ -154,7 +154,7 @@ CREATE TABLE PosicionMatriz (
     es_activa BOOLEAN DEFAULT TRUE, -- FALSE para posiciones NULL
     descripcion TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_tipo_matriz) REFERENCES Tipo_Matriz (id) ON DELETE CASCADE,
+    FOREIGN KEY (id_tipo_matriz) REFERENCES TipoMatriz (id) ON DELETE CASCADE,
     UNIQUE KEY unique_position (id_tipo_matriz, fila, columna),
     INDEX idx_tipo_codigo (id_tipo_matriz, codigo)
 );
@@ -165,8 +165,8 @@ CREATE TABLE MatrizDiente (
     id_diente INT NOT NULL,
     id_tipo_matriz INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_diente) REFERENCES Dientes (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_tipo_matriz) REFERENCES Tipo_Matriz (id),
+    FOREIGN KEY (id_diente) REFERENCES Diente (id) ON DELETE CASCADE,
+    FOREIGN KEY (id_tipo_matriz) REFERENCES TipoMatriz (id),
     UNIQUE KEY unique_diente_matriz (id_diente)
 );
 
@@ -191,8 +191,8 @@ CREATE TABLE Hallazgos_Paciente (
     observaciones TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_diente) REFERENCES Dientes (id),
-    FOREIGN KEY (id_posicion_matriz) REFERENCES Posicion_Matriz (id),
+    FOREIGN KEY (id_diente) REFERENCES Diente (id),
+    FOREIGN KEY (id_posicion_matriz) REFERENCES PosicionMatriz (id),
     FOREIGN KEY (id_paciente) REFERENCES Paciente (id),
     FOREIGN KEY (id_doctor) REFERENCES Doctor (id),
     FOREIGN KEY (id_hallazgo) REFERENCES Hallazgos (id),
@@ -281,194 +281,7 @@ CREATE TABLE Cita (
     FOREIGN KEY (id_doctor) REFERENCES Doctor (id)
 );
 
--- registros
-
-INSERT INTO
-    Tipo_Matriz (
-        tipo_diente,
-        columnas,
-        descripcion
-    )
-VALUES (
-        'incisivo',
-        3,
-        'Matriz 3x3 para incisivos - sin superficie oclusal'
-    ),
-    (
-        'canino',
-        3,
-        'Matriz 3x3 para caninos - sin superficie oclusal'
-    ),
-    (
-        'premolar',
-        3,
-        'Matriz 3x3 para premolares - con superficie oclusal simple'
-    ),
-    (
-        'molar',
-        5,
-        'Matriz 3x5 para molares - con superficie oclusal compleja'
-    );
-
--- 6. POSICIONES PARA INCISIVOS Y CANINOS (matriz 3x3)
-
-INSERT INTO
-    Posicion_Matriz (
-        id_tipo_matriz,
-        fila,
-        columna,
-        codigo,
-        cara_anatomica,
-        ubicacion_especifica,
-        es_activa,
-        descripcion
-    )
-SELECT
-    tm.id,
-    fila,
-    columna,
-    codigo,
-    cara_anatomica,
-    ubicacion_especifica,
-    es_activa,
-    descripcion
-FROM Tipo_Matriz tm
-    CROSS JOIN (
-        SELECT
-            0 as fila, 0 as columna, 'V' as codigo, 'vestibular' as cara_anatomica, 'tercio_cervical' as ubicacion_especifica, TRUE as es_activa, 'Vestibular tercio cervical' as descripciones
-        UNION ALL
-        SELECT 0, 1, 'V2', 'vestibular', 'tercio_medio', TRUE, 'Vestibular tercio medio'
-        UNION ALL
-        SELECT 0, 2, 'V3', 'vestibular', 'tercio_incisal', TRUE, 'Vestibular tercio incisal'
-        UNION ALL
-        SELECT 1, 0, 'M', 'mesial', 'completa', TRUE, 'Superficie mesial completa'
-        UNION ALL
-        SELECT 1, 1, NULL, NULL, NULL, FALSE, 'Posición central vacía'
-        UNION ALL
-        SELECT 1, 2, 'D', 'distal', 'completa', TRUE, 'Superficie distal completa'
-        UNION ALL
-        SELECT 2, 0, 'L', 'lingual', 'tercio_cervical', TRUE, 'Lingual tercio cervical'
-        UNION ALL
-        SELECT 2, 1, 'L2', 'lingual', 'tercio_medio', TRUE, 'Lingual tercio medio'
-        UNION ALL
-        SELECT 2, 2, 'L3', 'lingual', 'tercio_incisal', TRUE, 'Lingual tercio incisal'
-    ) posiciones
-WHERE
-    tm.tipo_diente IN ('incisivo', 'canino');
-
--- 7. POSICIONES PARA PREMOLARES (matriz 3x3 con oclusal)
-INSERT INTO
-    Posicion_Matriz (
-        id_tipo_matriz,
-        fila,
-        columna,
-        codigo,
-        cara_anatomica,
-        ubicacion_especifica,
-        es_activa,
-        descripcion
-    )
-SELECT
-    tm.id,
-    fila,
-    columna,
-    codigo,
-    cara_anatomica,
-    ubicacion_especifica,
-    es_activa,
-    descripcion
-FROM Tipo_Matriz tm
-    CROSS JOIN (
-        SELECT
-            0 as fila, 0 as columna, 'V' as codigo, 'vestibular' as cara_anatomica, 'tercio_cervical' as ubicacion_especifica, TRUE as es_activa, 'Vestibular tercio cervical' as descripcion
-        UNION ALL
-        SELECT 0, 1, 'V2', 'vestibular', 'tercio_medio', TRUE, 'Vestibular tercio medio'
-        UNION ALL
-        SELECT 0, 2, 'V3', 'vestibular', 'tercio_oclusal', TRUE, 'Vestibular tercio oclusal'
-        UNION ALL
-        SELECT 1, 0, 'M', 'mesial', 'completa', TRUE, 'Superficie mesial completa'
-        UNION ALL
-        SELECT 1, 1, 'O', 'oclusal', 'completa', TRUE, 'Superficie oclusal completa'
-        UNION ALL
-        SELECT 1, 2, 'D', 'distal', 'completa', TRUE, 'Superficie distal completa'
-        UNION ALL
-        SELECT 2, 0, 'L', 'lingual', 'tercio_cervical', TRUE, 'Lingual tercio cervical'
-        UNION ALL
-        SELECT 2, 1, 'L2', 'lingual', 'tercio_medio', TRUE, 'Lingual tercio medio'
-        UNION ALL
-        SELECT 2, 2, 'L3', 'lingual', 'tercio_oclusal', TRUE, 'Lingual tercio oclusal'
-    ) posiciones
-WHERE
-    tm.tipo_diente = 'premolar';
-
--- 8. POSICIONES PARA MOLARES (matriz 3x5)
-INSERT INTO
-    Posicion_Matriz (
-        id_tipo_matriz,
-        fila,
-        columna,
-        codigo,
-        cara_anatomica,
-        ubicacion_especifica,
-        es_activa,
-        descripcion
-    )
-SELECT
-    tm.id,
-    fila,
-    columna,
-    codigo,
-    cara_anatomica,
-    ubicacion_especifica,
-    es_activa,
-    descripcion
-FROM Tipo_Matriz tm
-    CROSS JOIN (
-        -- Fila 0: Vestibular
-        SELECT
-            0 as fila, 0 as columna, 'V' as codigo, 'vestibular' as cara_anatomica, 'tercio_cervical' as ubicacion_especifica, TRUE as es_activa, 'Vestibular tercio cervical' as descripcion
-        UNION ALL
-        SELECT 0, 1, 'V2', 'vestibular', 'tercio_medio', TRUE, 'Vestibular tercio medio'
-        UNION ALL
-        SELECT 0, 2, 'V3', 'vestibular', 'tercio_oclusal', TRUE, 'Vestibular tercio oclusal'
-        UNION ALL
-        SELECT 0, 3, NULL, NULL, NULL, FALSE, 'Posición vacía'
-        UNION ALL
-        SELECT 0, 4, NULL, NULL, NULL, FALSE, 'Posición vacía'
-        UNION ALL
-        -- Fila 1: Oclusal expandida
-        SELECT 1, 0, 'D', 'distal', 'completa', TRUE, 'Superficie distal completa'
-        UNION ALL
-        SELECT 1, 1, 'O', 'oclusal', 'fosa_central', TRUE, 'Fosa central oclusal'
-        UNION ALL
-        SELECT 1, 2, 'O2', 'oclusal', 'cuspide_vestibular', TRUE, 'Cúspide vestibular'
-        UNION ALL
-        SELECT 1, 3, 'O3', 'oclusal', 'cuspide_lingual', TRUE, 'Cúspide lingual'
-        UNION ALL
-        SELECT 1, 4, 'M', 'mesial', 'completa', TRUE, 'Superficie mesial completa'
-        UNION ALL
-        -- Fila 2: Lingual
-        SELECT 2, 0, 'L', 'lingual', 'tercio_cervical', TRUE, 'Lingual tercio cervical'
-        UNION ALL
-        SELECT 2, 1, 'L2', 'lingual', 'tercio_medio', TRUE, 'Lingual tercio medio'
-        UNION ALL
-        SELECT 2, 2, 'L3', 'lingual', 'tercio_oclusal', TRUE, 'Lingual tercio oclusal'
-        UNION ALL
-        SELECT 2, 3, NULL, NULL, NULL, FALSE, 'Posición vacía'
-        UNION ALL
-        SELECT 2, 4, NULL, NULL, NULL, FALSE, 'Posición vacía'
-    ) posiciones
-WHERE
-    tm.tipo_diente = 'molar';
-
--- 9. AUTO-GENERAR matrices para todos los dientes existentes
-INSERT INTO
-    Matriz_Diente (id_diente, id_tipo_matriz)
-SELECT d.id, tm.id
-FROM Dientes d
-    JOIN Tipo_Matriz tm ON d.tipo_diente = tm.tipo_diente;
-
--- 10. VISTAS ÚTILES para consultas
+-- VISTAS ÚTILES para consultas
 
 -- Vista: Obtener matriz completa de un diente
 CREATE VIEW Vista_Matriz_Diente AS
@@ -486,10 +299,10 @@ SELECT
     pm.es_activa,
     pm.descripcion as posicion_descripcion
 FROM
-    Dientes d
-    JOIN Matriz_Diente md ON d.id = md.id_diente
-    JOIN Tipo_Matriz tm ON md.id_tipo_matriz = tm.id
-    JOIN Posicion_Matriz pm ON tm.id = pm.id_tipo_matriz
+    Diente d
+    JOIN MatrizDiente md ON d.id = md.id_diente
+    JOIN TipoMatriz tm ON md.id_tipo_matriz = tm.id
+    JOIN PosicionMatriz pm ON tm.id = pm.id_tipo_matriz
 ORDER BY d.numero_diente, pm.fila, pm.columna;
 
 -- Vista: Hallazgos con información completa de posición
@@ -509,14 +322,6 @@ SELECT
 FROM
     Hallazgos_Paciente hp
     JOIN Paciente p ON hp.id_paciente = p.id
-    JOIN Dientes d ON hp.id_diente = d.id
-    LEFT JOIN Posicion_Matriz pm ON hp.id_posicion_matriz = pm.id
+    JOIN Diente d ON hp.id_diente = d.id
+    LEFT JOIN PosicionMatriz pm ON hp.id_posicion_matriz = pm.id
     JOIN Hallazgos h ON hp.id_hallazgo = h.id;
-
--- CONSULTAS DE EJEMPLO
-
--- Obtener matriz de un diente específico
--- SELECT * FROM Vista_Matriz_Diente WHERE numero_diente = '16';
-
--- Obtener hallazgos de un paciente con posiciones específicas
--- SELECT * FROM Vista_Hallazgos_Completos WHERE paciente_nombre LIKE '%Juan%';
