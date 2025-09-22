@@ -7,6 +7,7 @@ import { ExampleModule } from './example/example.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { AllExceptionsFilter } from './shared/filters/http-exception.filter';
 import { DoctorsModule } from './doctors/doctors.module';
+import { PatientsModule} from './patients/patients.module';
 import { IdentityModule } from './identity/identity.module';
 import { RegistrosDentalesModule } from './dentalrecords/registrosdentales.module';
 
@@ -32,6 +33,7 @@ import { RegistrosDentalesModule } from './dentalrecords/registrosdentales.modul
     ExampleModule,
     DoctorsModule,
     PrismaModule,
+    PatientsModule,
     IdentityModule,
     RegistrosDentalesModule,
   ],

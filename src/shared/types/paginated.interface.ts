@@ -1,18 +1,17 @@
 /**
  * Interface para representar los filtros de paginación.
  */
-import { IsOptional, IsInt, Min, IsString } from 'class-validator';
+import { IsOptional, IsInt, Min } from 'class-validator';
 
 export class PaginationFilters<T> {
+  @IsOptional() @IsInt() @Min(1)
+  page?: number = 1;
+
+  @IsOptional() @IsInt() @Min(1)
+  size?: number = 10;
+
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  page?: number;
   filters?: T;
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  size?: number;
 }
 
 /**
