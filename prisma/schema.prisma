@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -17,11 +14,11 @@ datasource db {
 /**
  * tabla test de prueba
  */
-
 model TestUser {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
+  jaja  String
 }
 
 /**
@@ -39,19 +36,20 @@ model User {
   fecha_creacion      DateTime   @default(now())
   fecha_actualizacion DateTime   @updatedAt
 
-  //fk relaciones
-  UserRole UserRole[]
-  Doctor   Doctor[]
+  // relaciones
+  UserRole      UserRole[]
+  Doctor        Doctor[]
   refreshTokens RefreshToken[]
 }
 
 model Role {
-  id                  Int        @id @default(autoincrement())
-  nombre              String     @unique
+  id                  Int      @id @default(autoincrement())
+  nombre              String   @unique
   descripcion         String
-  fecha_creacion      DateTime   @default(now())
-  fecha_actualizacion DateTime   @updatedAt
-  UserRole            UserRole[]
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  UserRole UserRole[]
 }
 
 model UserRole {
@@ -59,10 +57,12 @@ model UserRole {
   asignado_en  DateTime @default(now())
   asignado_por String?
   activo       Boolean  @default(true)
-  user         User     @relation(fields: [userId], references: [id])
-  userId       Int
-  role         Role     @relation(fields: [roleId], references: [id])
-  roleId       Int
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId Int
+
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roleId Int
 
   @@unique([userId, roleId])
 }
@@ -75,53 +75,56 @@ enum EstadoUser {
 /**
  * pacientes
  */
-
 model Paciente {
-  id                  Int                 @id @default(autoincrement())
-  numero_documento    String              @unique
-  tipo_documento      EnumTipoDocumento   @default(DNI)
+  id                  Int               @id @default(autoincrement())
+  numero_documento    String            @unique
+  tipo_documento      EnumTipoDocumento @default(DNI)
   nombre              String
   apellido_paterno    String
   apellido_materno    String
   fecha_nacimiento    DateTime
-  genero              EnumGenero          @default(OTRO)
+  genero              EnumGenero        @default(OTRO)
   telefono            String
   email               String
   direccion           String
   estado_civil        EnumEstadocivil
   ocupacion           String
-  fecha_creacion      DateTime            @default(now())
-  fecha_actualizacion DateTime            @updatedAt
-  ContactoPaciente    ContactoPaciente[]
-  DireccionPaciente   DireccionPaciente[]
-  hallazgos_paciente  HallazgosPaciente[]
-  planes_tratamiento  PlanTratamiento[]
-  registros_clinicos  RegistroClinico[]
-  citas               Cita[]
+  fecha_creacion      DateTime          @default(now())
+  fecha_actualizacion DateTime          @updatedAt
+
+  ContactoPaciente   ContactoPaciente[]
+  DireccionPaciente  DireccionPaciente[]
+  hallazgos_paciente HallazgosPaciente[]
+  planes_tratamiento PlanTratamiento[]
+  registros_clinicos RegistroClinico[]
+  citas              Cita[]
 }
 
 model ContactoPaciente {
-  id                  Int      @id @default(autoincrement())
-  paciente            Paciente @relation(fields: [pacienteId], references: [id])
-  pacienteId          Int
-  nombre              String
-  telefono            String
-  relacion            String
+  id         Int      @id @default(autoincrement())
+  paciente   Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  pacienteId Int
+  nombre     String
+  telefono   String
+  relacion   String
+
   fecha_creacion      DateTime @default(now())
   fecha_actualizacion DateTime @updatedAt
 }
 
 model DireccionPaciente {
-  id                  Int      @id @default(autoincrement())
-  paciente            Paciente @relation(fields: [pacienteId], references: [id])
-  pacienteId          Int
-  calle               String
-  referencia          String
-  departamento        String
-  distrito            String
-  provincia           String
-  pais                String
-  nro_exterior        String
+  id         Int      @id @default(autoincrement())
+  paciente   Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  pacienteId Int
+
+  calle        String
+  referencia   String
+  departamento String
+  distrito     String
+  provincia    String
+  pais         String
+  nro_exterior String
+
   fecha_creacion      DateTime @default(now())
   fecha_actualizacion DateTime @updatedAt
 }
@@ -129,28 +132,27 @@ model DireccionPaciente {
 /**
  * doctores
  */
-
 model Doctor {
-  id                  Int                 @id @default(autoincrement())
-  user_id             Int                 @unique
-  numero_documento    String              @unique
-  tipo_documento      EnumTipoDocumento   @default(DNI)
+  id                  Int               @id @default(autoincrement())
+  user_id             Int               @unique
+  numero_documento    String            @unique
+  tipo_documento      EnumTipoDocumento @default(DNI)
   nombre              String
   apellido_paterno    String
   apellido_materno    String
   telefono            String
-  email               String              @unique
+  email               String            @unique
   especialidad        String
-  estado              EstadoDoctor        @default(ACTIVO)
-  fecha_creacion      DateTime            @default(now())
-  fecha_actualizacion DateTime            @updatedAt
-  hallazgos_paciente  HallazgosPaciente[]
-  tratamientos        Tratamiento[]
-  registros_clinicos  RegistroClinico[]
-  citas               Cita[]
+  estado              EstadoDoctor      @default(ACTIVO)
+  fecha_creacion      DateTime          @default(now())
+  fecha_actualizacion DateTime          @updatedAt
 
-  //fk relacion
-  user User @relation(fields: [user_id], references: [id])
+  hallazgos_paciente HallazgosPaciente[]
+  tratamientos       Tratamiento[]
+  registros_clinicos RegistroClinico[]
+  citas              Cita[]
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 }
 
 enum EstadoDoctor {
@@ -162,113 +164,119 @@ enum EstadoDoctor {
  * Dientes
  */
 model Diente {
-  id                  Int                 @id @default(autoincrement())
-  numero_diente       String
-  nombre_diente       String
-  descripcion         String?
-  edad_diente         String?
-  tipo_diente         EnumTipoDiente
-  fecha_creacion      DateTime            @default(now())
-  fecha_actualizacion DateTime            @updatedAt
-  MatrizDiente        MatrizDiente[]
+  id            Int            @id @default(autoincrement())
+  numero_diente String         @unique
+  nombre_diente String
+  descripcion   String?
+  edad_diente   String?
+  tipo_diente   EnumTipoDiente
+
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  ConfiguracionDiente ConfiguracionDiente[]
   hallazgos_paciente  HallazgosPaciente[]
 }
 
-model TipoMatriz {
-  id                  Int              @id @default(autoincrement())
-  tipo_diente         EnumTipoDiente   @unique
-  filas               Int              @default(3)
-  columnas            Int              @default(3)
-  descripcion         String
-  fecha_creacion      DateTime         @default(now())
-  fecha_actualizacion DateTime         @updatedAt
-  PosicionMatriz      PosicionMatriz[]
-  MatrizDiente        MatrizDiente[]
+model ConfiguracionSuperficie {
+  id          Int            @id @default(autoincrement())
+  tipo_diente EnumTipoDiente @unique
+  filas       Int            @default(3)
+  columnas    Int            @default(3)
+  descripcion String
+
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  SuperficieDental    SuperficieDental[]
+  ConfiguracionDiente ConfiguracionDiente[]
 }
 
-model PosicionMatriz {
-  id                   Int                 @id @default(autoincrement())
-  tipo_matriz          TipoMatriz          @relation(fields: [tipoMatrizId], references: [id])
-  tipoMatrizId         Int
-  fila                 Int
-  columna              Int
-  codigo               String
-  cara_anatomica       EnumCaraAnatomica
-  ubicacion_especifica String?
-  es_activa            Boolean             @default(true)
-  descripcion          String
-  fecha_creacion       DateTime            @default(now())
-  fecha_actualizacion  DateTime            @updatedAt
-  hallazgos_paciente   HallazgosPaciente[]
+model SuperficieDental {
+  id                        Int               @id @default(autoincrement())
+  configuracionSuperficieId Int
+  fila                      Int
+  columna                   Int
+  codigo                    String
+  cara_anatomica            EnumCaraAnatomica
+  ubicacion_especifica      String?
+  es_activa                 Boolean           @default(true)
+  descripcion               String
+
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  configuracion_superficie ConfiguracionSuperficie @relation(fields: [configuracionSuperficieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hallazgos_paciente       HallazgosPaciente[]
 }
 
-model MatrizDiente {
-  id                  Int        @id @default(autoincrement())
-  diente              Diente     @relation(fields: [dienteId], references: [id])
-  dienteId            Int
-  tipo_matriz         TipoMatriz @relation(fields: [tipoMatrizId], references: [id])
-  tipoMatrizId        Int
-  fecha_creacion      DateTime   @default(now())
-  fecha_actualizacion DateTime   @updatedAt
+model ConfiguracionDiente {
+  id                        Int @id @default(autoincrement())
+  dienteId                  Int
+  configuracionSuperficieId Int
 
-  @@unique([dienteId, tipoMatrizId])
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  diente                   Diente                  @relation(fields: [dienteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  configuracion_superficie ConfiguracionSuperficie @relation(fields: [configuracionSuperficieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([dienteId, configuracionSuperficieId])
 }
 
 /**
  * Hallazgos
  */
 model Hallazgos {
-  id                  Int          @id @default(autoincrement())
-  nombre_hallazgo     String       @db.VarChar(100)
-  abreviacion         String?      @db.VarChar(20)
-  descripcion         String?      @db.Text
-  tipo_hallazgo       TipoHallazgo
-  color               String?      @db.VarChar(20)
-  fecha_creacion      DateTime     @default(now())
-  fecha_actualizacion DateTime     @updatedAt
+  id              Int          @id @default(autoincrement())
+  nombre_hallazgo String       @db.VarChar(100)
+  abreviacion     String?      @db.VarChar(20)
+  descripcion     String?      @db.Text
+  tipo_hallazgo   TipoHallazgo
+  color           String?      @db.VarChar(20)
 
-  // fk relaciones
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
   hallazgos_paciente HallazgosPaciente[]
 }
 
 model HallazgosPaciente {
-  id                  Int      @id @default(autoincrement())
-  id_diente           Int
-  id_posicion_matriz  Int?
-  id_paciente         Int
-  id_doctor           Int
-  id_hallazgo         Int
-  observaciones       String?  @db.Text
+  id                   Int     @id @default(autoincrement())
+  id_diente            Int
+  id_superficie_dental Int?
+  id_paciente          Int
+  id_doctor            Int
+  id_hallazgo          Int
+  observaciones        String? @db.Text
+
   fecha_creacion      DateTime @default(now())
   fecha_actualizacion DateTime @updatedAt
 
-  // fk relaciones
-  diente          Diente          @relation(fields: [id_diente], references: [id])
-  posicion_matriz PosicionMatriz? @relation(fields: [id_posicion_matriz], references: [id])
-  paciente        Paciente        @relation(fields: [id_paciente], references: [id])
-  doctor          Doctor          @relation(fields: [id_doctor], references: [id])
-  hallazgo        Hallazgos       @relation(fields: [id_hallazgo], references: [id])
+  diente            Diente            @relation(fields: [id_diente], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  superficie_dental SuperficieDental? @relation(fields: [id_superficie_dental], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  paciente          Paciente          @relation(fields: [id_paciente], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  doctor            Doctor            @relation(fields: [id_doctor], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  hallazgo          Hallazgos         @relation(fields: [id_hallazgo], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  // indices
   @@index([id_paciente, id_diente], name: "idx_paciente_diente")
   @@index([fecha_creacion], name: "idx_fecha_creacion")
 }
 
 /**
- * Módulo Tratamiento
+ * Tratamientos
  */
-
 model PlanTratamiento {
-  id                  Int                   @id @default(autoincrement())
-  id_paciente         Int?
-  fecha_inicio        DateTime?             @db.Date
-  fecha_fin           DateTime?             @db.Date
-  estado              EstadoPlanTratamiento @default(activo)
-  fecha_creacion      DateTime              @default(now())
-  fecha_actualizacion DateTime              @updatedAt
+  id           Int                   @id @default(autoincrement())
+  id_paciente  Int?
+  fecha_inicio DateTime?             @db.Date
+  fecha_fin    DateTime?             @db.Date
+  estado       EstadoPlanTratamiento @default(activo)
 
-  // fk relaciones
-  paciente     Paciente?     @relation(fields: [id_paciente], references: [id])
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  paciente     Paciente?     @relation(fields: [id_paciente], references: [id], onDelete: SetNull, onUpdate: Cascade)
   tratamientos Tratamiento[]
 }
 
@@ -280,12 +288,12 @@ model Tratamiento {
   costo               Decimal?          @db.Decimal(10, 2)
   duracion            Int?
   estado              EstadoTratamiento @default(activo)
-  fecha_creacion      DateTime          @default(now())
-  fecha_actualizacion DateTime          @updatedAt
 
-  // fk relaciones
-  plan_tratamiento PlanTratamiento? @relation(fields: [id_plan_tratamiento], references: [id])
-  doctor           Doctor?          @relation(fields: [id_doctor], references: [id])
+  fecha_creacion      DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  plan_tratamiento PlanTratamiento? @relation(fields: [id_plan_tratamiento], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  doctor           Doctor?          @relation(fields: [id_doctor], references: [id], onDelete: SetNull, onUpdate: Cascade)
   pagos            Pago[]
 }
 
@@ -297,22 +305,20 @@ model Pago {
   fecha_pago     DateTime    @default(now())
   estado         EstadoPago  @default(pendiente)
 
-  // fk relaciones
-  tratamiento Tratamiento? @relation(fields: [id_tratamiento], references: [id])
+  tratamiento Tratamiento? @relation(fields: [id_tratamiento], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 /**
- * Tablas de Historial Clínico
+ * Historial clínico
  */
-
 model TipoRegistroClinico {
-  id                  Int      @id @default(autoincrement())
-  nombre_tipo         String   @db.VarChar(100)
-  descripcion         String?  @db.Text
+  id          Int     @id @default(autoincrement())
+  nombre_tipo String  @db.VarChar(100)
+  descripcion String? @db.Text
+
   fecha_creacion      DateTime @default(now())
   fecha_actualizacion DateTime @updatedAt
 
-  // fk relaciones
   registros_clinicos RegistroClinico[]
 }
 
@@ -324,16 +330,14 @@ model RegistroClinico {
   descripcion      String?  @db.Text
   fecha_registro   DateTime @default(now())
 
-  // fk relaciones
-  paciente      Paciente?            @relation(fields: [id_paciente], references: [id])
-  doctor        Doctor?              @relation(fields: [id_doctor], references: [id])
-  tipo_registro TipoRegistroClinico? @relation(fields: [id_tipo_registro], references: [id])
+  paciente      Paciente?            @relation(fields: [id_paciente], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  doctor        Doctor?              @relation(fields: [id_doctor], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  tipo_registro TipoRegistroClinico? @relation(fields: [id_tipo_registro], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 /**
- * Tablas de Citas Médicas
+ * Citas
  */
-
 model Cita {
   id          Int        @id @default(autoincrement())
   id_paciente Int?
@@ -342,15 +346,13 @@ model Cita {
   motivo      String?    @db.Text
   estado      EstadoCita @default(pendiente)
 
-  // fk relaciones
-  paciente Paciente? @relation(fields: [id_paciente], references: [id])
-  doctor   Doctor?   @relation(fields: [id_doctor], references: [id])
+  paciente Paciente? @relation(fields: [id_paciente], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  doctor   Doctor?   @relation(fields: [id_doctor], references: [id], onDelete: SetNull, onUpdate: Cascade)
 }
 
 /**
  * Enums
  */
-
 enum TipoHallazgo {
   diente
   cara
@@ -427,5 +429,5 @@ model RefreshToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

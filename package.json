@@ -20,7 +20,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset",
+    "prisma:seed": "ts-node --project tsconfig-seed.json src/dentalrecords/infrastructure/seed/dental-seed.ts",
+    "db:reset": "npm run prisma:reset && npm run prisma:seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -29,6 +32,8 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.15.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
@@ -40,6 +45,7 @@
     "prisma": "^6.15.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

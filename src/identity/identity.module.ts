@@ -1,7 +1,7 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from 'src/shared/prisma/prisma.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthService } from './application/services/auth.service';
 import { RoleService } from './application/services/role.service';
 import { UserService } from './application/services/user.service';
@@ -21,7 +21,23 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
       secret: process.env.JWT_SECRET || 'irdent-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
-    PrismaModule,
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000, // 1 segundo
+        limit: 3, // 3 requests por segundo
+      },
+      {
+        name: 'medium',
+        ttl: 10000, // 10 segundos
+        limit: 20, // 20 requests por 10 segundos
+      },
+      {
+        name: 'long',
+        ttl: 60000, // 1 minuto
+        limit: 100, // 100 requests por minuto
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
@@ -34,7 +50,7 @@ import { PrismaRoleRepository } from './infrastructure/repositories/prisma-role.
     { provide: UserRepository, useClass: PrismaUserRepository },
     { provide: RoleRepository, useClass: PrismaRoleRepository },
   ],
-  exports: [AuthService, RoleService, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, RoleService, UserService, JwtAuthGuard, RolesGuard],
 })
 export class IdentityModule implements OnModuleInit {
   constructor(
